@@ -18,6 +18,7 @@ dependencies = [
 dev = [
     "jupyterlab>=4.6,<5",
     "mypy>=2.3,<3",
+    "pandas-stubs",
     "pre-commit>=4.6,<5",
     "pytest>=9.1,<10",
     "ruff>=0.15,<0.16",

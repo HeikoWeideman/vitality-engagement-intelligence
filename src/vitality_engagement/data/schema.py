@@ -1,5 +1,6 @@
 """Schema definitions for synthetic engagement data."""
 
+from datetime import date
 from enum import StrEnum
 
 from pydantic import BaseModel, Field, PositiveInt
@@ -27,3 +28,4 @@ class GenerationConfig(BaseModel):
     member_count: PositiveInt = 500
     day_count: PositiveInt = 180
     random_seed: int = Field(default=42, ge=0)
+    start_date: date = date(2025, 1, 1)
