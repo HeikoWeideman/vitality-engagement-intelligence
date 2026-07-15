@@ -8,6 +8,9 @@ import pandas as pd
 from vitality_engagement.data.behaviour_patterns import (
     generate_engagement_trajectory,
 )
+from vitality_engagement.data.data_quality import (
+    add_data_quality_issues,
+)
 from vitality_engagement.data.generate_members import generate_members
 from vitality_engagement.data.goal_metrics import (
     add_goal_metrics_and_target,
@@ -173,6 +176,20 @@ def generate_daily_engagement(
 def generate_modeling_dataset(
     config: GenerationConfig,
 ) -> pd.DataFrame:
+    """Generate modelling records with labels and data issues."""
+    engagement = generate_daily_engagement(config)
+
+    engagement_with_history = add_interaction_history(
+        engagement,
+        config,
+    )
+
+    labelled_data = add_goal_metrics_and_target(engagement_with_history)
+
+    return add_data_quality_issues(
+        labelled_data,
+        config,
+    )
     """Generate daily engagement records with future outcome labels."""
     engagement = generate_daily_engagement(config)
 

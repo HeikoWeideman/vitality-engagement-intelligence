@@ -25,3 +25,10 @@ The expected unique key is:
 
 ```text
 member_id + date
+## Latent truth and observed data quality
+
+Future goal outcomes are calculated from the clean latent behavioural process before artificial data-quality problems are added.
+
+Observed feature fields may then contain missing values, outliers, delays, or category changes. This allows the project to test realistic data validation and preprocessing without allowing artificial corruption to redefine the synthetic target.
+
+Data-quality indicator fields are intended primarily for monitoring and validation. They should not automatically be treated as model predictors.
