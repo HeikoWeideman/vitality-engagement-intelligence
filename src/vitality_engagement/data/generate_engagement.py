@@ -9,6 +9,9 @@ from vitality_engagement.data.behaviour_patterns import (
     generate_engagement_trajectory,
 )
 from vitality_engagement.data.generate_members import generate_members
+from vitality_engagement.data.goal_metrics import (
+    add_goal_metrics_and_target,
+)
 from vitality_engagement.data.schema import GenerationConfig
 
 STEP_BASELINES: Final[dict[str, float]] = {
@@ -162,3 +165,12 @@ def generate_daily_engagement(
         weekly_goal=weekly_goal,
         app_sessions=app_sessions,
     )
+
+
+def generate_modeling_dataset(
+    config: GenerationConfig,
+) -> pd.DataFrame:
+    """Generate daily engagement records with future outcome labels."""
+    engagement = generate_daily_engagement(config)
+
+    return add_goal_metrics_and_target(engagement)
