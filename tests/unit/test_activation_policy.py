@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import date
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -15,6 +15,7 @@ from vitality_engagement.activation.policy import (
 from vitality_engagement.activation.schema import ActivationContractError
 
 SCORING_DIGEST = "a" * 64
+DECISION_TIMESTAMP = datetime(2025, 6, 30, 8, 0, tzinfo=UTC)
 
 
 def test_default_policy_preserves_required_safety_controls() -> None:
@@ -54,14 +55,14 @@ def test_activation_run_id_is_deterministic() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
-        decision_date=date(2025, 6, 30),
+        decision_timestamp=DECISION_TIMESTAMP,
     )
     second = build_activation_run_id(
         policy=policy,
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
-        decision_date=date(2025, 6, 30),
+        decision_timestamp=DECISION_TIMESTAMP,
     )
 
     assert first == second
@@ -69,7 +70,36 @@ def test_activation_run_id_is_deterministic() -> None:
     assert len(first) == 28
 
 
-def test_activation_run_id_changes_when_governed_input_changes() -> None:
+def test_activation_run_id_normalises_equivalent_timezones() -> None:
+    policy = ActivationPolicy()
+    south_africa_timezone = timezone(timedelta(hours=2))
+
+    utc_run_id = build_activation_run_id(
+        policy=policy,
+        model_name="python_logistic_baseline",
+        threshold=0.431,
+        scoring_artifact_sha256=SCORING_DIGEST,
+        decision_timestamp=DECISION_TIMESTAMP,
+    )
+    equivalent_run_id = build_activation_run_id(
+        policy=policy,
+        model_name="python_logistic_baseline",
+        threshold=0.431,
+        scoring_artifact_sha256=SCORING_DIGEST,
+        decision_timestamp=datetime(
+            2025,
+            6,
+            30,
+            10,
+            0,
+            tzinfo=south_africa_timezone,
+        ),
+    )
+
+    assert utc_run_id == equivalent_run_id
+
+
+def test_activation_run_id_changes_when_timestamp_changes() -> None:
     policy = ActivationPolicy()
 
     first = build_activation_run_id(
@@ -77,17 +107,28 @@ def test_activation_run_id_changes_when_governed_input_changes() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
-        decision_date=date(2025, 6, 30),
+        decision_timestamp=DECISION_TIMESTAMP,
     )
     second = build_activation_run_id(
         policy=policy,
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
-        decision_date=date(2025, 7, 1),
+        decision_timestamp=DECISION_TIMESTAMP + timedelta(minutes=1),
     )
 
     assert first != second
+
+
+def test_activation_run_id_rejects_naive_timestamp() -> None:
+    with pytest.raises(ActivationContractError, match="timezone-aware"):
+        build_activation_run_id(
+            policy=ActivationPolicy(),
+            model_name="python_logistic_baseline",
+            threshold=0.431,
+            scoring_artifact_sha256=SCORING_DIGEST,
+            decision_timestamp=datetime(2025, 6, 30, 8, 0),
+        )
 
 
 def test_activation_run_id_rejects_invalid_artifact_digest() -> None:
@@ -97,5 +138,5 @@ def test_activation_run_id_rejects_invalid_artifact_digest() -> None:
             model_name="python_logistic_baseline",
             threshold=0.431,
             scoring_artifact_sha256="not-a-digest",
-            decision_date=date(2025, 6, 30),
+            decision_timestamp=DECISION_TIMESTAMP,
         )

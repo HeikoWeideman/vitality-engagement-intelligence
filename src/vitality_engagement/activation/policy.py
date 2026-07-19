@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, datetime
 from math import isfinite
 from typing import Final
 
@@ -115,7 +115,7 @@ def build_activation_run_id(
     model_name: str,
     threshold: float,
     scoring_artifact_sha256: str,
-    decision_date: date,
+    decision_timestamp: datetime,
 ) -> str:
     """Build an idempotent run ID from governed immutable inputs."""
     if not model_name.strip():
@@ -124,10 +124,13 @@ def build_activation_run_id(
     if not isfinite(threshold) or threshold < 0.0 or threshold > 1.0:
         raise ActivationContractError("threshold must fall between zero and one.")
 
+    if decision_timestamp.tzinfo is None or decision_timestamp.utcoffset() is None:
+        raise ActivationContractError("decision_timestamp must be timezone-aware.")
+
     _validate_sha256(scoring_artifact_sha256)
 
     payload = {
-        "decision_date": decision_date.isoformat(),
+        "decision_timestamp": decision_timestamp.astimezone(UTC).isoformat(timespec="microseconds"),
         "model_name": model_name,
         "policy_fingerprint": calculate_policy_fingerprint(policy),
         "scoring_artifact_sha256": scoring_artifact_sha256,

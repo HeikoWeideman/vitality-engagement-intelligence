@@ -1,5 +1,10 @@
-"""Governed activation-policy contracts for Stage 5."""
+"""Governed activation-policy contracts and deterministic decisions."""
 
+from vitality_engagement.activation.engine import (
+    ActivationDecisionError,
+    ActivationDecisionResult,
+    decide_activations,
+)
 from vitality_engagement.activation.policy import (
     ActivationPolicy,
     build_activation_run_id,
@@ -24,6 +29,8 @@ from vitality_engagement.activation.schema import (
 __all__ = [
     "ActivationAuditRecord",
     "ActivationContractError",
+    "ActivationDecisionError",
+    "ActivationDecisionResult",
     "ActivationPolicy",
     "ActivationRunMetadata",
     "DecisionOutcome",
@@ -38,4 +45,5 @@ __all__ = [
     "SuppressedPrediction",
     "build_activation_run_id",
     "calculate_policy_fingerprint",
+    "decide_activations",
 ]

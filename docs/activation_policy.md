@@ -69,9 +69,9 @@ A run ID is derived from:
 - Model name
 - Frozen threshold
 - Scoring artifact SHA-256 digest
-- Decision date
+- Exact timezone-aware decision timestamp, normalised to UTC
 
-Re-running the same governed inputs produces the same run ID. A change to any governed input
+Re-running the same governed inputs at the same decision timestamp produces the same run ID. A change to any governed input
 produces a different ID.
 
 ## Typed records
