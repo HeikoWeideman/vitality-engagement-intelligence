@@ -115,3 +115,20 @@ This milestone deliberately defers:
 - Dashboard development
 - Intervention delivery or message sending
 - Experimental treatment assignment
+
+## Activation artifact contract
+
+Stage 5.4 persists one audit row for every source scoring row to:
+
+- `artifacts/activation/activation_decisions.parquet`
+- `artifacts/activation/activation_decisions.metadata.json`
+
+The writer uses temporary files, validates both pending artifacts, and replaces the final
+paths only after verification succeeds. It verifies identifiers, lineage, probabilities,
+the frozen threshold, timestamps, outcomes, reason codes, selected intervention fields,
+priority ranks, decision counts, and metadata.
+
+This milestone does not provide an operational command that fabricates member contact
+context. A governed source for opt-out status, contact permission, active cases, contact
+history, and prior-intervention counts must be defined before an end-to-end activation run
+is legitimate.
