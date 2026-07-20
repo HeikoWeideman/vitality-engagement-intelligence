@@ -23,6 +23,14 @@ from vitality_engagement.activation.bigquery import (
     build_run_merge_query,
     build_staging_tables,
 )
+from vitality_engagement.activation.context_artifact import (
+    CONTACT_CONTEXT_ARTIFACT_VERSION,
+    CONTACT_CONTEXT_COLUMNS,
+    ContactContextArtifactError,
+    ContactContextArtifactMetadata,
+    VerifiedContactContextArtifact,
+    load_verified_contact_context_artifact,
+)
 from vitality_engagement.activation.engine import (
     ActivationDecisionError,
     ActivationDecisionResult,
@@ -74,6 +82,10 @@ __all__ = [
     "ActivationWarehouseError",
     "ActivationAuditRecord",
     "ActivationContractError",
+    "CONTACT_CONTEXT_ARTIFACT_VERSION",
+    "CONTACT_CONTEXT_COLUMNS",
+    "ContactContextArtifactError",
+    "ContactContextArtifactMetadata",
     "ActivationDecisionError",
     "ActivationDecisionResult",
     "ActivationPolicy",
@@ -87,6 +99,7 @@ __all__ = [
     "ReasonCode",
     "ScoredPrediction",
     "SelectedActivation",
+    "VerifiedContactContextArtifact",
     "SuppressedPrediction",
     "build_activation_artifact_metadata",
     "build_activation_decision_frame",
@@ -103,6 +116,7 @@ __all__ = [
     "build_staging_tables",
     "calculate_policy_fingerprint",
     "decide_activations",
+    "load_verified_contact_context_artifact",
     "verify_activation_artifact",
     "upload_activation_artifact_to_bigquery",
     "write_activation_artifact",
