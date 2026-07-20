@@ -15,6 +15,7 @@ from vitality_engagement.activation.policy import (
 from vitality_engagement.activation.schema import (
     ActivationAuditRecord,
     ActivationRunMetadata,
+    ContactContextLineage,
     DecisionOutcome,
     EligiblePrediction,
     ExcludedPrediction,
@@ -193,6 +194,7 @@ def decide_activations(
     decision_timestamp: datetime,
     scoring_artifact_path: str,
     scoring_artifact_sha256: str,
+    contact_context_lineage: ContactContextLineage,
 ) -> ActivationDecisionResult:
     """Apply governed exclusions, suppressions, ranking, and capacity."""
     _require_aware_timestamp(decision_timestamp)
@@ -210,6 +212,7 @@ def decide_activations(
         model_name=model_name,
         threshold=threshold,
         scoring_artifact_sha256=scoring_artifact_sha256,
+        contact_context_lineage=contact_context_lineage,
         decision_timestamp=decision_timestamp,
     )
 
@@ -492,6 +495,7 @@ def decide_activations(
         threshold=threshold,
         scoring_artifact_path=scoring_artifact_path,
         scoring_artifact_sha256=scoring_artifact_sha256,
+        contact_context_lineage=contact_context_lineage,
         decision_timestamp=decision_timestamp,
         capacity_limit=policy.maximum_activations_per_run,
         source_row_count=len(prediction_rows),

@@ -26,6 +26,7 @@ from vitality_engagement.activation.engine import (
 )
 from vitality_engagement.activation.policy import ActivationPolicy
 from vitality_engagement.activation.schema import (
+    ContactContextLineage,
     MemberActivationContext,
     ScoredPrediction,
 )
@@ -52,6 +53,21 @@ INGESTED_AT = datetime(
 )
 SCORING_DIGEST = "a" * 64
 SCORING_PATH = "artifacts/scoring/python_logistic_scoring_predictions.parquet"
+CONTACT_CONTEXT_LINEAGE = ContactContextLineage(
+    artifact_path="artifacts/activation/contact_context.parquet",
+    artifact_sha256="b" * 64,
+    source_name="approved_contact_context_snapshot",
+    source_snapshot_reference=("snapshot-2025-06-30T07:30:00Z"),
+    source_query_sha256="c" * 64,
+    snapshot_timestamp=datetime(
+        2025,
+        6,
+        30,
+        7,
+        30,
+        tzinfo=UTC,
+    ),
+)
 
 
 class _FakeJob:
@@ -207,6 +223,7 @@ def _result() -> ActivationDecisionResult:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
 

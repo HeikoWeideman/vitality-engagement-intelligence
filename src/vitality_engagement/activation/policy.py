@@ -11,6 +11,7 @@ from typing import Final
 
 from vitality_engagement.activation.schema import (
     ActivationContractError,
+    ContactContextLineage,
     InterventionCategory,
 )
 
@@ -115,6 +116,7 @@ def build_activation_run_id(
     model_name: str,
     threshold: float,
     scoring_artifact_sha256: str,
+    contact_context_lineage: ContactContextLineage,
     decision_timestamp: datetime,
 ) -> str:
     """Build an idempotent run ID from governed immutable inputs."""
@@ -129,11 +131,27 @@ def build_activation_run_id(
 
     _validate_sha256(scoring_artifact_sha256)
 
+    if contact_context_lineage.snapshot_timestamp > decision_timestamp:
+        raise ActivationContractError(
+            "contact_context_snapshot_timestamp must not be after decision_timestamp."
+        )
+
     payload = {
         "decision_timestamp": decision_timestamp.astimezone(UTC).isoformat(timespec="microseconds"),
         "model_name": model_name,
         "policy_fingerprint": calculate_policy_fingerprint(policy),
         "scoring_artifact_sha256": scoring_artifact_sha256,
+        "contact_context_artifact_sha256": (contact_context_lineage.artifact_sha256),
+        "contact_context_source_name": (contact_context_lineage.source_name),
+        "contact_context_source_snapshot_reference": (
+            contact_context_lineage.source_snapshot_reference
+        ),
+        "contact_context_source_query_sha256": (contact_context_lineage.source_query_sha256),
+        "contact_context_snapshot_timestamp": (
+            contact_context_lineage.snapshot_timestamp.astimezone(UTC).isoformat(
+                timespec="microseconds"
+            )
+        ),
         "threshold": threshold,
     }
     encoded_payload = json.dumps(

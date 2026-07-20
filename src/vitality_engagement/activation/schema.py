@@ -312,6 +312,45 @@ class ActivationAuditRecord:
 
 
 @dataclass(frozen=True)
+class ContactContextLineage:
+    """Immutable lineage for one governed contact-context snapshot."""
+
+    artifact_path: str
+    artifact_sha256: str
+    source_name: str
+    source_snapshot_reference: str
+    source_query_sha256: str
+    snapshot_timestamp: datetime
+
+    def __post_init__(self) -> None:
+        """Validate immutable contact-context lineage."""
+        _require_non_empty(
+            self.artifact_path,
+            "contact_context_artifact_path",
+        )
+        _require_non_empty(
+            self.source_name,
+            "contact_context_source_name",
+        )
+        _require_non_empty(
+            self.source_snapshot_reference,
+            "contact_context_source_snapshot_reference",
+        )
+        _require_sha256(
+            self.artifact_sha256,
+            "contact_context_artifact_sha256",
+        )
+        _require_sha256(
+            self.source_query_sha256,
+            "contact_context_source_query_sha256",
+        )
+        _require_aware(
+            self.snapshot_timestamp,
+            "contact_context_snapshot_timestamp",
+        )
+
+
+@dataclass(frozen=True)
 class ActivationRunMetadata:
     """Lineage and summary metadata for one deterministic activation run."""
 
@@ -322,6 +361,7 @@ class ActivationRunMetadata:
     threshold: float
     scoring_artifact_path: str
     scoring_artifact_sha256: str
+    contact_context_lineage: ContactContextLineage
     decision_timestamp: datetime
     capacity_limit: int
     source_row_count: int
@@ -343,6 +383,11 @@ class ActivationRunMetadata:
         _require_sha256(self.policy_fingerprint, "policy_fingerprint")
         _require_sha256(self.scoring_artifact_sha256, "scoring_artifact_sha256")
         _require_aware(self.decision_timestamp, "decision_timestamp")
+
+        if self.contact_context_lineage.snapshot_timestamp > self.decision_timestamp:
+            raise ActivationContractError(
+                "contact_context_snapshot_timestamp must not be after decision_timestamp."
+            )
 
         if not isfinite(self.threshold) or self.threshold < 0.0 or self.threshold > 1.0:
             raise ActivationContractError("threshold must fall between zero and one.")

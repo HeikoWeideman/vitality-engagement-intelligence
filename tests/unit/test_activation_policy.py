@@ -12,10 +12,28 @@ from vitality_engagement.activation.policy import (
     build_activation_run_id,
     calculate_policy_fingerprint,
 )
-from vitality_engagement.activation.schema import ActivationContractError
+from vitality_engagement.activation.schema import (
+    ActivationContractError,
+    ContactContextLineage,
+)
 
 SCORING_DIGEST = "a" * 64
 DECISION_TIMESTAMP = datetime(2025, 6, 30, 8, 0, tzinfo=UTC)
+CONTACT_CONTEXT_LINEAGE = ContactContextLineage(
+    artifact_path="artifacts/activation/contact_context.parquet",
+    artifact_sha256="b" * 64,
+    source_name="approved_contact_context_snapshot",
+    source_snapshot_reference=("snapshot-2025-06-30T07:30:00Z"),
+    source_query_sha256="c" * 64,
+    snapshot_timestamp=datetime(
+        2025,
+        6,
+        30,
+        7,
+        30,
+        tzinfo=UTC,
+    ),
+)
 
 
 def test_default_policy_preserves_required_safety_controls() -> None:
@@ -55,6 +73,7 @@ def test_activation_run_id_is_deterministic() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=DECISION_TIMESTAMP,
     )
     second = build_activation_run_id(
@@ -62,6 +81,7 @@ def test_activation_run_id_is_deterministic() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=DECISION_TIMESTAMP,
     )
 
@@ -79,6 +99,7 @@ def test_activation_run_id_normalises_equivalent_timezones() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=DECISION_TIMESTAMP,
     )
     equivalent_run_id = build_activation_run_id(
@@ -86,6 +107,7 @@ def test_activation_run_id_normalises_equivalent_timezones() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=datetime(
             2025,
             6,
@@ -107,6 +129,7 @@ def test_activation_run_id_changes_when_timestamp_changes() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=DECISION_TIMESTAMP,
     )
     second = build_activation_run_id(
@@ -114,7 +137,32 @@ def test_activation_run_id_changes_when_timestamp_changes() -> None:
         model_name="python_logistic_baseline",
         threshold=0.431,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         decision_timestamp=DECISION_TIMESTAMP + timedelta(minutes=1),
+    )
+
+    assert first != second
+
+
+def test_activation_run_id_changes_when_contact_context_changes() -> None:
+    first = build_activation_run_id(
+        policy=ActivationPolicy(),
+        model_name="python_logistic_baseline",
+        threshold=0.431,
+        scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
+        decision_timestamp=DECISION_TIMESTAMP,
+    )
+    second = build_activation_run_id(
+        policy=ActivationPolicy(),
+        model_name="python_logistic_baseline",
+        threshold=0.431,
+        scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=replace(
+            CONTACT_CONTEXT_LINEAGE,
+            artifact_sha256="d" * 64,
+        ),
+        decision_timestamp=DECISION_TIMESTAMP,
     )
 
     assert first != second
@@ -127,6 +175,7 @@ def test_activation_run_id_rejects_naive_timestamp() -> None:
             model_name="python_logistic_baseline",
             threshold=0.431,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
             decision_timestamp=datetime(2025, 6, 30, 8, 0),
         )
 
@@ -138,5 +187,6 @@ def test_activation_run_id_rejects_invalid_artifact_digest() -> None:
             model_name="python_logistic_baseline",
             threshold=0.431,
             scoring_artifact_sha256="not-a-digest",
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
             decision_timestamp=DECISION_TIMESTAMP,
         )

@@ -13,6 +13,7 @@ from vitality_engagement.activation.engine import (
 )
 from vitality_engagement.activation.policy import ActivationPolicy
 from vitality_engagement.activation.schema import (
+    ContactContextLineage,
     DecisionOutcome,
     MemberActivationContext,
     ReasonCode,
@@ -22,6 +23,21 @@ from vitality_engagement.activation.schema import (
 DECISION_TIMESTAMP = datetime(2025, 6, 30, 8, 0, tzinfo=UTC)
 SCORING_DIGEST = "a" * 64
 SCORING_PATH = "artifacts/scoring/python_logistic_scoring_predictions.parquet"
+CONTACT_CONTEXT_LINEAGE = ContactContextLineage(
+    artifact_path="artifacts/activation/contact_context.parquet",
+    artifact_sha256="b" * 64,
+    source_name="approved_contact_context_snapshot",
+    source_snapshot_reference=("snapshot-2025-06-30T07:30:00Z"),
+    source_query_sha256="c" * 64,
+    snapshot_timestamp=datetime(
+        2025,
+        6,
+        30,
+        7,
+        30,
+        tzinfo=UTC,
+    ),
+)
 
 
 def _prediction(
@@ -78,11 +94,13 @@ def test_latest_prediction_supersedes_older_member_rows() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert result.metadata.superseded_count == 1
     assert result.metadata.source_member_count == 1
     assert result.metadata.selected_count == 1
+    assert result.metadata.contact_context_lineage == CONTACT_CONTEXT_LINEAGE
 
     superseded = next(
         record
@@ -100,6 +118,7 @@ def test_below_threshold_precedes_missing_context() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert result.metadata.below_threshold_count == 1
@@ -115,6 +134,7 @@ def test_missing_context_fails_closed() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert result.metadata.excluded_count == 1
@@ -135,6 +155,7 @@ def test_contact_not_permitted_precedes_opt_out() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert result.excluded_predictions[0].reason_code is ReasonCode.CONTACT_NOT_PERMITTED
@@ -153,6 +174,7 @@ def test_stale_prediction_precedes_active_case_suppression() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert result.suppressed_predictions[0].reason_code is ReasonCode.PREDICTION_TOO_OLD
@@ -173,6 +195,7 @@ def test_contact_cooldown_sets_suppression_until_date() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     suppression = result.suppressed_predictions[0]
@@ -193,6 +216,7 @@ def test_prior_intervention_limit_suppresses_member() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert (
@@ -228,6 +252,7 @@ def test_ranking_uses_probability_date_then_member_id() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     selected_members = [
@@ -266,6 +291,7 @@ def test_decision_is_independent_of_source_input_order() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
     second = decide_activations(
         predictions=list(reversed(predictions)),
@@ -274,6 +300,7 @@ def test_decision_is_independent_of_source_input_order() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert first.metadata == second.metadata
@@ -290,6 +317,7 @@ def test_engine_rejects_empty_prediction_input() -> None:
             decision_timestamp=DECISION_TIMESTAMP,
             scoring_artifact_path=SCORING_PATH,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         )
 
 
@@ -304,6 +332,7 @@ def test_engine_rejects_duplicate_source_identifiers() -> None:
             decision_timestamp=DECISION_TIMESTAMP,
             scoring_artifact_path=SCORING_PATH,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         )
 
 
@@ -319,6 +348,7 @@ def test_engine_rejects_duplicate_member_contexts() -> None:
             decision_timestamp=DECISION_TIMESTAMP,
             scoring_artifact_path=SCORING_PATH,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         )
 
 
@@ -336,6 +366,7 @@ def test_engine_rejects_future_prediction_date() -> None:
             decision_timestamp=DECISION_TIMESTAMP,
             scoring_artifact_path=SCORING_PATH,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         )
 
 
@@ -356,6 +387,7 @@ def test_engine_rejects_future_contact_timestamp() -> None:
             decision_timestamp=DECISION_TIMESTAMP,
             scoring_artifact_path=SCORING_PATH,
             scoring_artifact_sha256=SCORING_DIGEST,
+            contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
         )
 
 
@@ -371,6 +403,7 @@ def test_policy_change_changes_run_metadata_identity() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
     second = decide_activations(
         predictions=predictions,
@@ -379,6 +412,7 @@ def test_policy_change_changes_run_metadata_identity() -> None:
         decision_timestamp=DECISION_TIMESTAMP,
         scoring_artifact_path=SCORING_PATH,
         scoring_artifact_sha256=SCORING_DIGEST,
+        contact_context_lineage=CONTACT_CONTEXT_LINEAGE,
     )
 
     assert first.metadata.run_id != second.metadata.run_id
