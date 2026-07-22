@@ -4,6 +4,52 @@ An end-to-end machine-learning product for predicting near-term wellness-program
 
 ## Current status
 
+Stages 1–5 are complete. The latest completed milestone is **Stage 5 — Governed activation workflow**, which adds deterministic, capacity-aware activation decisions, verified local artifacts, a human-review queue, lineage controls, and fail-closed safety boundaries.
+
+Stage 6 — Looker Studio dashboard is the next planned stage.
+
+### Project delivery status
+
+| Stage                                                | Status      |
+| ---------------------------------------------------- | ----------- |
+| Stage 1 — Repository and development foundation      | Complete    |
+| Stage 2 — Synthetic data and BigQuery ingestion      | Complete    |
+| Stage 3 — Governed features and BigQuery ML baseline | Complete    |
+| Stage 4 — Python modelling and operational scoring   | Complete    |
+| Stage 5 — Activation pipeline                        | Complete    |
+| Stage 6 — Looker Studio dashboard                    | Not started |
+| Stage 7 — Monitoring and governance                  | Not started |
+| Stage 8 — Final documentation and portfolio polish   | Not started |
+
+All modelling results use synthetic data and must not be interpreted as evidence about real member behaviour, health, eligibility, or intervention effectiveness.
+
+## Stage 5 — Governed activation workflow
+
+Stage 5 converts verified scoring forecasts and an independently verified contact-context snapshot into deterministic, capacity-aware recommendations for mandatory human review.
+
+The workflow audits every scoring row, applies permission and suppression rules, preserves scoring and contact-context lineage, enforces a maximum of 100 selected records per run, and writes verified local Parquet and metadata artifacts.
+
+A legitimate approved contact-context artifact is required. The repository does not fabricate or provide one.
+
+The local command is available through:
+
+`python -m vitality_engagement.activation.cli`
+
+Do not run it until approved contact-context files exist. The default local outputs are:
+
+- `artifacts/activation/activation_decisions.parquet`
+- `artifacts/activation/activation_decisions.metadata.json`
+- `artifacts/activation/human_review_queue.parquet`
+- `artifacts/activation/human_review_queue.metadata.json`
+
+The human-review queue contains only records already marked `selected_for_review`, ordered by deterministic priority rank, with a fixed `pending_human_review` status. Its metadata preserves SHA-256 lineage to both source activation artifacts.
+
+The CLI prints the activation artifact paths, review-queue paths, source rows audited, selected count, and `Mode: local artifacts only`.
+
+A selected record is a recommendation for authorised human review only. It is not automatically approved for contact.
+
+See `docs/activation_policy.md` and `docs/activation_runbook.md`.
+
 ## Stage 4 — Python modelling
 
 Stage 4 implements a leakage-safe Python modelling workflow on top of the governed BigQuery feature layer.
@@ -150,38 +196,7 @@ The prediction output contains:
 
 These rows are forecasts, not confirmed missed-goal outcomes.
 
-
-
-## Stage 5 — Governed activation workflow
-
-Stage 5 converts verified scoring forecasts and an independently verified contact-context snapshot into deterministic, capacity-aware recommendations for mandatory human review.
-
-The workflow audits every scoring row, applies permission and suppression rules, preserves scoring and contact-context lineage, enforces a maximum of 100 selected records per run, and writes verified local Parquet and metadata artifacts.
-
-A legitimate approved contact-context artifact is required. The repository does not fabricate or provide one.
-
-The local command is available through:
-
-`python -m vitality_engagement.activation.cli`
-
-Do not run it until approved contact-context files exist. The default local outputs are:
-
-- `artifacts/activation/activation_decisions.parquet`
-- `artifacts/activation/activation_decisions.metadata.json`
-- `artifacts/activation/human_review_queue.parquet`
-- `artifacts/activation/human_review_queue.metadata.json`
-
-The human-review queue contains only records already marked `selected_for_review`, ordered by deterministic priority rank, with a fixed `pending_human_review` status. Its metadata preserves SHA-256 lineage to both source activation artifacts.
-
-The CLI prints the activation artifact paths, review-queue paths, source rows audited, selected count, and `Mode: local artifacts only`.
-
-A selected record is a recommendation for authorised human review only. It is not automatically approved for contact.
-
-See `docs/activation_policy.md` and `docs/activation_runbook.md`.
-
-
-
-### Quality gate
+## Quality gate
 
 ```powershell
 ruff format --check .
@@ -191,25 +206,10 @@ pytest -q
 pre-commit run --all-files
 ```
 
-### Documentation
+## Documentation
 
 The full model card includes data lineage, preprocessing, evaluation results, explainability, persistence, intended use, limitations, and the test-holdout qualification:
 
 ```text
 docs/model_card.md
 ```
-
-### Project delivery status
-
-| Stage                                                | Status      |
-| ---------------------------------------------------- | ----------- |
-| Stage 1 — Repository and development foundation      | Complete    |
-| Stage 2 — Synthetic data and BigQuery ingestion      | Complete    |
-| Stage 3 — Governed features and BigQuery ML baseline | Complete    |
-| Stage 4 — Python modelling and operational scoring   | Complete    |
-| Stage 5 — Activation pipeline                        | Complete    |
-| Stage 6 — Looker Studio dashboard                    | Not started |
-| Stage 7 — Monitoring and governance                  | Not started |
-| Stage 8 — Final documentation and portfolio polish   | Not started |
-
-All modelling results use synthetic data and must not be interpreted as evidence about real member behaviour, health, eligibility, or intervention effectiveness.
