@@ -61,8 +61,8 @@ A view without a valid synthetic-data marker is invalid.
 | `dashboard_activation_run_summary` | Activation run |
 | `dashboard_activation_outcome_summary` | Run and decision outcome |
 | `dashboard_activation_reason_summary` | Run, outcome, and reason code |
-| `dashboard_review_summary` | Run and intervention category |
-| `dashboard_lineage_freshness` | Governed source |
+| `dashboard_review_selection_summary` | Run and intervention category |
+| `dashboard_lineage_freshness_summary` | Governed source |
 | `dashboard_quality_status` | Validation check |
 
 ## Forecast metrics
@@ -272,6 +272,7 @@ Approved values:
 | `stale` | Source is older than expected |
 | `missing` | Required timestamp is unavailable |
 | `empty` | Governed source contains no rows |
+| `historical_snapshot` | Valid historical source snapshot outside a current operational freshness window |
 | `invalid` | Source fails quality or reconciliation checks |
 
 Source-specific freshness windows will be defined with the Stage 6.2 view contracts.
