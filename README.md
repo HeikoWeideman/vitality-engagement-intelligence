@@ -6,7 +6,7 @@ An end-to-end machine-learning product for predicting near-term wellness-program
 
 Stages 1–5 are complete. The latest completed milestone is **Stage 5 — Governed activation workflow**, which adds deterministic, capacity-aware activation decisions, verified local artifacts, a human-review queue, lineage controls, and fail-closed safety boundaries.
 
-Stage 6 — Looker Studio dashboard is the next planned stage.
+Stage 6 is in progress. Governance requirements, governed BigQuery views, data-quality assertions, and dashboard build documentation are complete; actual Looker Studio construction, validation evidence, and final Stage 6 closure remain outstanding.
 
 ### Project delivery status
 
@@ -17,7 +17,7 @@ Stage 6 — Looker Studio dashboard is the next planned stage.
 | Stage 3 — Governed features and BigQuery ML baseline | Complete    |
 | Stage 4 — Python modelling and operational scoring   | Complete    |
 | Stage 5 — Activation pipeline                        | Complete    |
-| Stage 6 — Looker Studio dashboard                    | Not started |
+| Stage 6 — Looker Studio dashboard                    | In progress |
 | Stage 7 — Monitoring and governance                  | Not started |
 | Stage 8 — Final documentation and portfolio polish   | Not started |
 
