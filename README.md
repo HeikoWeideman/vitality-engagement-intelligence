@@ -6,7 +6,7 @@ An end-to-end machine-learning product for predicting near-term wellness-program
 
 Stages 1–5 are complete. The latest completed milestone is **Stage 5 — Governed activation workflow**, which adds deterministic, capacity-aware activation decisions, verified local artifacts, a human-review queue, lineage controls, and fail-closed safety boundaries.
 
-Stage 6 is in progress. Governance requirements, governed BigQuery views, data-quality assertions, and dashboard build documentation are complete; actual Looker Studio construction, validation evidence, and final Stage 6 closure remain outstanding.
+Stage 6 is in final closure. The governed Looker Studio report is built, validated in View mode, evidenced with genuine screenshots, and reviewer-approved; the complete repository quality gate, commit, push, matching-hash verification, and clean-tree confirmation remain outstanding.
 
 ### Project delivery status
 

@@ -1,29 +1,33 @@
-# Stage 6 Looker Studio Dashboard
+﻿# Stage 6 Looker Studio Dashboard
 
 ## Status
 
-Stage 6 is in progress.
+Stage 6 is in final closure.
 
-Completed repository work:
+Completed:
 
-- Dashboard governance requirements
-- Governed metric inventory
+- Governance requirements and dashboard metric inventory
 - Nine governed BigQuery dashboard views
 - BigQuery assertions and consolidated quality status
 - Looker Studio build specification
 - Looker Studio field mapping
 - Looker Studio validation checklist
-
-Not yet completed:
-
-- Looker Studio report construction
-- Page configuration and chart validation
-- Genuine screenshot evidence
+- Five-page Looker Studio report construction
+- View-mode page and chart validation
+- Genuine screenshot evidence for all five pages
+- Stage 6 dashboard evidence summary
+- Root README final-closure status update
 - Reviewer sign-off
-- Stage 6 evidence summary
-- Root README completion update
 
-Do not mark Stage 6 complete until the actual report is built, validated, evidenced, reviewed, committed, and pushed.
+Remaining before Stage 6 completion:
+
+- Complete repository quality gate
+- Staged-change validation
+- Commit and push
+- Matching local and remote hash verification
+- Clean working-tree confirmation
+
+Do not mark Stage 6 complete until the remaining closure checks are confirmed.
 
 ## Purpose
 
@@ -86,7 +90,6 @@ Defines the evidence-based checks required for:
 - Refresh behaviour
 - Export and sharing restrictions
 - Screenshots
-- Reviewer sign-off
 - Final Stage 6 acceptance
 
 ## Approved governed views
