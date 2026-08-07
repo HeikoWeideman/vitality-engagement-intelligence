@@ -1,29 +1,87 @@
-﻿# Vitality Engagement Intelligence Engine
+# Vitality Engagement Intelligence Engine
 
 An end-to-end machine-learning product for predicting near-term wellness-programme disengagement, selecting an appropriate behavioural intervention, and generating a safe personalised message.
 
 ## Current status
 
-Stages 1–5 are complete. The latest completed milestone is **Stage 5 — Governed activation workflow**, which adds deterministic, capacity-aware activation decisions, verified local artifacts, a human-review queue, lineage controls, and fail-closed safety boundaries.
+Stages 1â€“6 are complete. The latest closed milestone is **Stage 6 â€” Governed Looker Studio dashboard**, which was validated in View mode, evidenced with genuine screenshots, reviewer-approved, committed, pushed, and verified with matching local and remote hashes.
 
-Stage 6 is complete. The governed Looker Studio report is built, validated in View mode, evidenced with genuine screenshots, reviewer-approved, and closed with a passing repository quality gate, committed and pushed changes, matching local and remote hashes, and a clean working tree.
+Stage 7 is complete. Local Python monitoring, verified atomic artifacts, read-only BigQuery monitoring views, governance checks, runbooks, and evidence are in place. The governed historical scoring snapshot has two warnings and two critical drift findings, which are preserved for human review rather than suppressed.
 
 ### Project delivery status
 
 | Stage                                                | Status      |
 | ---------------------------------------------------- | ----------- |
-| Stage 1 — Repository and development foundation      | Complete    |
-| Stage 2 — Synthetic data and BigQuery ingestion      | Complete    |
-| Stage 3 — Governed features and BigQuery ML baseline | Complete    |
-| Stage 4 — Python modelling and operational scoring   | Complete    |
-| Stage 5 — Activation pipeline                        | Complete    |
-| Stage 6 — Looker Studio dashboard                    | Complete    |
-| Stage 7 — Monitoring and governance                  | Not started |
-| Stage 8 — Final documentation and portfolio polish   | Not started |
+| Stage 1 â€” Repository and development foundation      | Complete    |
+| Stage 2 â€” Synthetic data and BigQuery ingestion      | Complete    |
+| Stage 3 â€” Governed features and BigQuery ML baseline | Complete    |
+| Stage 4 â€” Python modelling and operational scoring   | Complete    |
+| Stage 5 â€” Activation pipeline                        | Complete    |
+| Stage 6 â€” Looker Studio dashboard                    | Complete    |
+| Stage 7 â€” Monitoring and governance                  | Closure pending |
+| Stage 8 â€” Final documentation and portfolio polish   | Not started |
 
 All modelling results use synthetic data and must not be interpreted as evidence about real member behaviour, health, eligibility, or intervention effectiveness.
 
-## Stage 5 — Governed activation workflow
+## Stage 7 â€” Monitoring and governance
+
+Stage 7 adds deterministic, fail-closed monitoring for the selected Stage 4 Python model, the separate Stage 3 BigQuery comparison baseline, dashboard quality, lineage freshness, and valid activation empty states.
+
+The local command is:
+
+`python -m vitality_engagement.monitoring.cli --monitoring-timestamp "<timezone-aware ISO-8601 timestamp>"`
+
+Default local outputs are:
+
+- `artifacts/monitoring/monitoring_checks.parquet`
+- `artifacts/monitoring/monitoring_checks.metadata.json`
+
+The local workflow evaluates 57 checks covering scoring volume, model identity, threshold identity, schema identity, probability drift, all 47 model features, and unexpected categorical values. It records SHA-256 lineage for the modelling data, persisted model, model metadata, scoring predictions, and scoring metadata.
+
+The governed Stage 7 evidence run produced:
+
+| Result | Value |
+| --- | ---: |
+| Monitoring checks | 57 |
+| Passing checks | 53 |
+| Warning checks | 2 |
+| Critical checks | 2 |
+| Overall severity | Critical |
+| CLI exit code | 2 |
+
+The non-passing findings are:
+
+| Check | Observed value | Severity |
+| --- | ---: | --- |
+| Probability PSI | `0.155921` | Warning |
+| `previous_goal_streak_as_of` PSI | `1.559510` | Critical |
+| `previous_failed_goals_as_of` PSI | `0.290255` | Critical |
+| `avg_goal_completion_percentage_28d` PSI | `0.109969` | Warning |
+
+The critical findings are retained as genuine temporal-shift and model-extrapolation concerns. Monitoring thresholds were not weakened merely to obtain a passing result.
+
+The BigQuery monitoring layer keeps the two model identities separate:
+
+| Model | Threshold | Role |
+| --- | ---: | --- |
+| `python_logistic_baseline` | `0.431` | Selected Stage 4 Python model |
+| `bigquery_logistic_baseline` | `0.467` | Stage 3 comparison baseline |
+
+Read-only BigQuery monitoring views are:
+
+- `vitality_engagement_dev.model_monitoring_status`
+- `vitality_engagement_dev.governance_monitoring_status`
+
+The model-monitoring view has nine passing checks and two expected critical training-support findings. The governance-monitoring view has three passing checks covering valid activation empty states, all eight governed dashboard assets, and all seven dashboard lineage rows.
+
+Monitoring is descriptive and non-operational. It does not authorise member contact, outreach, intervention delivery, case creation, eligibility changes, penalties, treatment assignment, model promotion, retraining, or threshold changes.
+
+See:
+
+- `docs/monitoring_policy.md`
+- `docs/monitoring_runbook.md`
+- `docs/stage_7_monitoring_evidence.md`
+## Stage 5 â€” Governed activation workflow
 
 Stage 5 converts verified scoring forecasts and an independently verified contact-context snapshot into deterministic, capacity-aware recommendations for mandatory human review.
 
@@ -50,7 +108,7 @@ A selected record is a recommendation for authorised human review only. It is no
 
 See `docs/activation_policy.md` and `docs/activation_runbook.md`.
 
-## Stage 4 — Python modelling
+## Stage 4 â€” Python modelling
 
 Stage 4 implements a leakage-safe Python modelling workflow on top of the governed BigQuery feature layer.
 
