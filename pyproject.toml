@@ -7,6 +7,7 @@ name = "vitality-engagement-intelligence"
 version = "0.1.0"
 description = "A synthetic engagement-risk modelling, governed review, dashboard, and monitoring portfolio."
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.12,<3.15"
 dependencies = [
     "google-cloud-bigquery>=3.42,<4",

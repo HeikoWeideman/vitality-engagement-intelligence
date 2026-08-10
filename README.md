@@ -376,6 +376,15 @@ Key retained evidence:
 - [Stage 6 dashboard evidence](docs/stage_6_dashboard_evidence.md)
 - [Stage 7 monitoring evidence](docs/stage_7_monitoring_evidence.md)
 
+## Repository maintenance
+
+Repository-level maintenance and collaboration controls are included alongside the technical portfolio:
+
+- [GitHub Actions CI](.github/workflows/ci.yml) runs the repository quality gate on pushes and pull requests to `main`.
+- [Contributing guide](CONTRIBUTING.md) documents development expectations and required validation.
+- [Security policy](SECURITY.md) defines safe reporting, credential handling, and governance-preserving security expectations.
+- [MIT License](LICENSE) defines the repository's open-source license.
+- GitHub pull-request and issue templates standardise validation, governance checks, and reproducible reporting.
 ## Productionisation considerations
 
 This repository is not production-ready. Any future real-world use would require, at minimum:
