@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "vitality-engagement-intelligence"
 version = "0.1.0"
-description = "An end-to-end engagement-risk prediction and behavioural intervention system."
+description = "A synthetic engagement-risk modelling, governed review, dashboard, and monitoring portfolio."
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [

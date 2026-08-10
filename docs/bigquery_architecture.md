@@ -1,4 +1,4 @@
-# BigQuery and SQL Architecture
+ BigQuery and SQL Architecture
 
 ## Overview
 
@@ -477,9 +477,8 @@ The current architecture has important limitations:
 * Predictive performance does not establish causal intervention effectiveness
 * Temporal shift is simulated rather than observed in production
 * Calibration weaknesses remain in some high-probability ranges
-* The BigQuery ML baseline has not yet been compared with Python models
-* Deployment, intervention selection, LLM generation, and monitoring are not
-  included in Stage 3
+* The BigQuery ML model `bigquery_logistic_baseline` at threshold `0.467` is the Stage 3 comparison baseline; the selected Stage 4 model `python_logistic_baseline` at threshold `0.431` remains separate
+* Stage 3 did not include activation, dashboard, or monitoring components; those were added in later governed stages and do not constitute production deployment
 
 These limitations must remain visible when the project is presented publicly.
 

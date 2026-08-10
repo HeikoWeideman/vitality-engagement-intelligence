@@ -1,4 +1,4 @@
-# Stage 6 Dashboard Evidence
+ Stage 6 Dashboard Evidence
 
 ## Report identity
 
@@ -92,13 +92,6 @@ Forecasts are not confirmed outcomes. Observed outcomes are descriptive and not 
 - Activation and review-selection sources displayed explicit governed empty states
 - No member-level data, operational dispatch controls, or outreach-authorisation controls were included
 - Dashboard visibility does not authorise operational action
-
-## Reviewer sign-off
-
-- Reviewer: Heiko Weideman
-- Review date: 2026-08-06
-- Review result: Pass
-- Approved for final Stage 6 repository closure
 
 ## Reviewer sign-off
 

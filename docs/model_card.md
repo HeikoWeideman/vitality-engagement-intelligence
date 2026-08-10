@@ -1,4 +1,4 @@
-# Model Card: Engagement Risk Logistic Baseline
+ Model Card: Engagement Risk Logistic Baseline
 
 ## Model summary
 
@@ -389,7 +389,7 @@ python -m vitality_engagement.models.scoring_artifact
 4. The model has not been assessed for real demographic or health-related fairness.
 5. Calibration and prevalence may change across future time periods.
 6. The threshold reflects validation F1 rather than business capacity or intervention cost.
-7. Probability drift and feature drift monitoring are not yet implemented.
+7. Stage 7 monitoring identified critical temporal-shift and training-support concerns for `previous_goal_streak_as_of` and `previous_failed_goals_as_of`; detection does not resolve those concerns or establish safe real-world use.
 8. Individual coefficients are vulnerable to correlated-feature instability.
 9. Categorical dummy coefficients do not provide simple reference-level comparisons.
 10. Operational scoring currently writes local artifacts rather than serving a deployed endpoint.
