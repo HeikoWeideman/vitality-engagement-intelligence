@@ -362,7 +362,7 @@ git diff --cached --stat
 
 ## Evidence and documentation
 
-Start with:
+Key Evidence:
 
 - [Project architecture](docs/project_architecture.md)
 - [Reproducibility guide](docs/reproducibility_guide.md)
@@ -397,6 +397,4 @@ This repository is not production-ready. Any future real-world use would require
 - controlled model registry, release, rollback, and audit procedures;
 - secure deployment architecture and incident response;
 - monitoring-response procedures that preserve adverse findings;
-- evidence that any intervention is safe, appropriate, and effective.
-
-None of those requirements is satisfied merely by reproducing this portfolio.
+- evidence that any intervention is clinically safe, appropriate, and effective.
